@@ -1,49 +1,67 @@
+#include <iostream>
+#include <map>
 #include <any>
+#include <sstream> 
+
+std::string read(std::string string = "") {
+	std::string buf;
+
+	if (string == "") {
+		do {
+			std::getline(std::cin, buf);
+			string += buf;
+		} while (buf != "");
+	}
+	std::istringstream stream(string);
+	string.clear();
+	while (stream >> buf) {
+		string += buf;
+	}
+
+	return string;
+}
 
 class Json {
-public:
-    // Конструктор из строки, содержащей Json-данные.
-    Json(const std::string& s)
-    {
-		throw std::logic_error("not implemented");
-    }
-	
-    // Метод возвращает true, если данный экземпляр содержит в себе JSON-массив. Иначе false.
-    bool is_array() const
-    {
-		throw std::logic_error("not implemented");
-    }
-    // Метод возвращает true, если данный экземпляр содержит в себе JSON-объект. Иначе false.
-    bool is_object() const
-    {
-		throw std::logic_error("not implemented");
-    }
+private:
+	std::map <std::string, std::any> map;
 
-    // Метод возвращает значение по ключу key, если экземпляр является JSON-объектом.
-    // Значение может иметь один из следующих типов: Json, std::string, double, bool или быть пустым.
-    // Если экземпляр является JSON-массивом, генерируется исключение.
-    std::any& operator[](const std::string& key)
-    {
+public:
+	Json(const std::string& s) {
 		throw std::logic_error("not implemented");
-    }
-    
-    // Метод возвращает значение по индексу index, если экземпляр является JSON-массивом.
-    // Значение может иметь один из следующих типов: Json, std::string, double, bool или быть пустым.
-    // Если экземпляр является JSON-объектом, генерируется исключение.
-    std::any& operator[](int index)
-    {
+	}
+
+
+	bool is_array() const {
 		throw std::logic_error("not implemented");
-    }
-    
-    // Метод возвращает объект класса Json из строки, содержащей Json-данные.
-    static Json parse(const std::string& s)
-    {
+	}
+
+	bool is_object() const {
 		throw std::logic_error("not implemented");
-    }
-    
-    // Метод возвращает объекта класса Json из файла, содержащего Json-данные в текстовом формате.
-    static Json parseFile(const std::string& path_to_file)
-    {
+	}
+
+	// Метод возвращает значение по ключу key, если экземпляр является JSON-объектом.
+	// Значение может иметь один из следующих типов: Json, std::string, double, bool или быть пустым.
+	// Если экземпляр является JSON-массивом, генерируется исключение.
+	std::any& operator[](const std::string& key) {
 		throw std::logic_error("not implemented");
-    }
+	}
+
+	// Метод возвращает значение по индексу index, если экземпляр является JSON-массивом.
+	// Значение может иметь один из следующих типов: Json, std::string, double, bool или быть пустым.
+	// Если экземпляр является JSON-объектом, генерируется исключение.
+	std::any& operator[](int index) {
+		throw std::logic_error("not implemented");
+	}
+
+	static Json parse(const std::string& s) {
+		std::string string = read(s);
+
+		return Json(string);
+
+		throw std::logic_error("not implemented");
+	}
+
+	static Json parseFile(const std::string& path_to_file) {
+		throw std::logic_error("not implemented");
+	}
 };
