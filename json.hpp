@@ -24,19 +24,23 @@ std::string read(std::string string = "") {
 class Json {
 private:
 	std::map <std::string, std::any> map;
-
+	std::string json_str;
 public:
 	Json(const std::string& s) {
-		throw std::logic_error("not implemented");
+		json_str = read(s);
 	}
 
-
 	bool is_array() const {
-		throw std::logic_error("not implemented");
+		if (json_str.front() == '[' && json_str.back() == ']')
+			return true;
+		else if ( json_str.front() == '{' && json_str.back() == '}' )
+			return false;
+		else
+			throw std::logic_error("not implemented");
 	}
 
 	bool is_object() const {
-		throw std::logic_error("not implemented");
+		return !(is_array);
 	}
 
 	// Метод возвращает значение по ключу key, если экземпляр является JSON-объектом.
@@ -54,11 +58,18 @@ public:
 	}
 
 	static Json parse(const std::string& s) {
-		std::string string = read(s);
+		Json object(s);
 
-		return Json(string);
+		if (object.is_array()) {
+			
+		}
+		else if (object.is_object()) {
 
-		throw std::logic_error("not implemented");
+		}
+		else
+			throw std::logic_error("not implemented");
+
+		return object;
 	}
 
 	static Json parseFile(const std::string& path_to_file) {
