@@ -26,6 +26,7 @@ class Json {
 private:
 	std::map <std::string, std::any> map;
 	std::string json_str;
+	std::vector<std::any> array;
 
 	Json take_object(int begin) {
 		int i = 1;
@@ -70,45 +71,88 @@ private:
 		return json_str.substr(begin + 1, end - begin);
 	}
 
-	std::vector<std::any> take_array(int begin) {
-		std::vector<std::any> vector;
-		std::any any_vector;
-		int end;
+	Json take_array(int begin) {
 		int i = 1;
+		int end;
 
 		for (auto ch = begin + 1; i != 0 && ch < json_str.length(); ch++) {
 			if (ch == '[')
 				i++;
 			else if (ch == ']')
 				i--;
+
 			if (i == 0)
 				end = ch;
 		}
-		json_str[begin++] = ' ';
-		json_str[end] = ' ';
+		std::string str = json_str.substr(begin, end - begin + 1);
 
-		while (json_str.find(',') && json_str.find(',') > begin && json_str.find(',') < end) {
+		return Json::parse(str);
+	}
 
-			switch (json_str[begin]) {
+	void take_array_value() {
+		std::any any_vector;
+		char first = json_str[json_str.front() + 1];
+
+		while (json_str.find(',')) {
+
+			switch (first) {
 				case '"': {
+					int begin = json_str.find('"');
+					json_str[begin] = ' ';
+					int end;
+
 					any_vector = take_string(begin, end);
+					json_str[json_str.find(',')] = ' ';
 					break;
 				}
 				case '{': {
-					any_vector = take_object(begin);
+					any_vector = take_object(json_str.front() + 1);
+					json_str[json_str.find(',')] = ' ';
 					break;
 				}
 				case '[': {
-					any_vector = take_array(begin);
+					any_vector = take_array(json_str.front() + 1);
+					json_str[json_str.find(',')] = ' ';
 					break;
 				}
 				default: {
-					take_bool_or_object(any_vector, begin, end);
+					int begin = json_str.find(' ');
+					int end;
+					take_bool_or_object(any_vector, begin + 1, end);
+					json_str[begin] = '.';
 				}
 			}
-			json_str[json_str.find(',')] = ' ';
-			vector.push_back(any_vector);
+			array.push_back(any_vector);
 		}
+
+		switch (first) {
+			case '"': {
+				int begin = json_str.find('"');
+				json_str[begin] = ' ';
+				int end;
+
+				any_vector = take_string(begin, end);
+				json_str[json_str.find(',')] = ' ';
+				break;
+			}
+			case '{': {
+				any_vector = take_object(json_str.front() + 1);
+				json_str[json_str.find(',')] = ' ';
+				break;
+			}
+			case '[': {
+				any_vector = take_array(json_str.front() + 1);
+				json_str[json_str.find(',')] = ' ';
+				break;
+			}
+			default: {
+				int begin = json_str.find(' ');
+				int end;
+				take_bool_or_object(any_vector, begin + 1, end);
+				json_str[begin] = '.';
+			}
+		}
+		array.push_back(any_vector);
 	}
 
 	std::pair<std::string, std::any> take_pair_in_object() {
@@ -156,18 +200,29 @@ public:
 			return false;
 	}
 
-	// Метод возвращает значение по ключу key, если экземпляр является JSON-объектом.
-	// Значение может иметь один из следующих типов: Json, std::string, double, bool или быть пустым.
-	// Если экземпляр является JSON-массивом, генерируется исключение.
-	std::any& operator[](const std::string& key) {
-		throw std::logic_error("not implemented");
+	bool is_array() const {
+		if (json_str.front() == '[' && json_str.back() == ']')
+			return true;
+		else
+			return false;
 	}
 
-	// Метод возвращает значение по индексу index, если экземпляр является JSON-массивом.
-	// Значение может иметь один из следующих типов: Json, std::string, double, bool или быть пустым.
-	// Если экземпляр является JSON-объектом, генерируется исключение.
+	std::any& operator[](const std::string& key) {
+		if (is_object()) {
+			if (map.find(key) != map.end()) {
+				return map[key];
+			}
+		}
+		else
+			throw std::logic_error("not implemented");
+	}
+
 	std::any& operator[](int index) {
-		throw std::logic_error("not implemented");
+		if (is_array()) {
+			return array[index];
+		}
+		else
+			throw std::logic_error("not implemented");
 	}
 
 	static Json parse(const std::string& s) {
@@ -181,8 +236,16 @@ public:
 				std::pair<std::string, std::any> pair = object.take_pair_in_object();
 				object.map.insert(pair);
 			}
+
+			return object;
 		}
-		else
+		else if (object.is_array()) {
+			object.json_str[object.json_str.find('[')] = ' ';
+			object.json_str[object.json_str.find(']')] = ' ';
+			object.take_array_value();
+
+			return object;
+		}
 			throw std::logic_error("not implemented");
 
 		return object;
