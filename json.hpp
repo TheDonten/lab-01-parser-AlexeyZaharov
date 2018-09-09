@@ -25,6 +25,7 @@ std::string read(std::string string = "") {
 class Json {
 private:
 	std::map <std::string, std::any> map;
+	std::string format;
 	std::string json_str;
 	std::vector<std::any> array;
 
@@ -51,8 +52,9 @@ private:
 		end = json_str.find(',');
 		json_str[end] = ' ';
 		std::string str = json_str.substr(begin, end - begin);
+
 		if (str == "false" || str == "true")
-			if (str == "false")
+			if (str == "false") 
 				any = false;
 			else
 				any = true;
@@ -69,7 +71,7 @@ private:
 		end = json_str.find('"');
 		json_str[end] = ' ';
 
-		return json_str.substr(begin + 1, end - begin);
+		return json_str.substr(begin + 1, end - begin - 1);
 	}
 
 	Json take_array(int begin) {
@@ -135,7 +137,7 @@ private:
 		json_str[begin] = ' ';
 		int end = json_str.find('"');
 		json_str[end] = ' ';
-		key = json_str.substr(begin + 1, end - begin);
+		key = json_str.substr(begin + 1, end - begin - 1);
 
 		begin = json_str.find(':');
 		json_str[begin++] = ' ';
@@ -164,17 +166,18 @@ private:
 public:
 	Json(const std::string& s) {
 		json_str = read(s);
+		format = json_str;
 	}
 
 	bool is_object() const {
-		if (json_str.front() == '{' && json_str.back() == '}')
+		if (format.front() == '{' && format.back() == '}')
 			return true;
 		else
 			return false;
 	}
 
 	bool is_array() const {
-		if (json_str.front() == '[' && json_str.back() == ']')
+		if (format.front() == '[' && format.back() == ']')
 			return true;
 		else
 			return false;
