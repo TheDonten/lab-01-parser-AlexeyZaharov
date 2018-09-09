@@ -50,11 +50,13 @@ private:
 
 	void take_bool_or_object(std::any& any, int begin, int end) {
 		end = json_str.find(',');
+		if (end == -1)
+			end = json_str.find('}') - 1;
 		json_str[end] = ' ';
 		std::string str = json_str.substr(begin, end - begin);
 
-		if (str == "false" || str == "true")
-			if (str == "false") 
+		if (str[0] == 'f' || str[0] == 't')
+			if (str[0] == '0')
 				any = false;
 			else
 				any = true;
@@ -100,31 +102,31 @@ private:
 		while (json_str.find(',') != std::string::npos) {
 
 			switch (first) {
-				case '"': {
-					int begin = json_str.find('"');
-					json_str[begin] = ' ';
-					int end = 0;
+			case '"': {
+				int begin = json_str.find('"');
+				json_str[begin] = ' ';
+				int end = 0;
 
-					any_vector = take_string(begin, end);
-					json_str[json_str.find(',')] = ' ';
-					break;
-				}
-				case '{': {
-					any_vector = take_object(json_str.front() + 1);
-					json_str[json_str.find(',')] = ' ';
-					break;
-				}
-				case '[': {
-					any_vector = take_array(json_str.front() + 1);
-					json_str[json_str.find(',')] = ' ';
-					break;
-				}
-				default: {
-					int begin = json_str.find(' ');
-					int end = 0;
-					take_bool_or_object(any_vector, begin + 1, end);
-					json_str[begin] = '.';
-				}
+				any_vector = take_string(begin, end);
+				json_str[json_str.find(',')] = ' ';
+				break;
+			}
+			case '{': {
+				any_vector = take_object(json_str.front() + 1);
+				json_str[json_str.find(',')] = ' ';
+				break;
+			}
+			case '[': {
+				any_vector = take_array(json_str.front() + 1);
+				json_str[json_str.find(',')] = ' ';
+				break;
+			}
+			default: {
+				int begin = json_str.find(' ');
+				int end = 0;
+				take_bool_or_object(any_vector, begin + 1, end);
+				json_str[begin] = '.';
+			}
 			}
 			array.push_back(any_vector);
 		}
@@ -143,21 +145,21 @@ private:
 		json_str[begin++] = ' ';
 
 		switch (json_str[begin]) {
-			case '"': {
-				any = take_string(begin, end);
-				break;
-				}
-			case '{': {
-				any = take_object(begin);
-				break;
-			}
-			case '[': {
-				any = take_array(begin);
-				break;
-			}
-			default: {
-				take_bool_or_object(any, begin, end);
-			}
+		case '"': {
+			any = take_string(begin, end);
+			break;
+		}
+		case '{': {
+			any = take_object(begin);
+			break;
+		}
+		case '[': {
+			any = take_array(begin);
+			break;
+		}
+		default: {
+			take_bool_or_object(any, begin, end);
+		}
 		}
 
 		return std::pair<std::string, std::any>(key, any);
@@ -207,7 +209,7 @@ public:
 		if (object.is_object()) {
 			object.json_str[object.json_str.find('{')] = ' ';
 			object.json_str[object.json_str.find('}')] = ' ';
-				
+
 			while (object.json_str.find(':') != std::string::npos) {
 				std::pair<std::string, std::any> pair = object.take_pair_in_object();
 				object.map.insert(pair);
@@ -222,7 +224,7 @@ public:
 
 			return object;
 		}
-			throw std::logic_error("not implemented");
+		throw std::logic_error("not implemented");
 
 		return object;
 	}
