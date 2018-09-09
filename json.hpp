@@ -28,10 +28,10 @@ private:
 	std::string json_str;
 
 	Json take_object(int begin) {
-		int i = 0;
+		int i = 1;
 		int end;
 
-		for (auto ch = begin; i != 0 && ch < json_str.length(); ch++) {
+		for (auto ch = begin + 1; i != 0 && ch < json_str.length(); ch++) {
 			if (ch == '{')
 				i++;
 			else if (ch == '}')
@@ -74,9 +74,9 @@ private:
 		std::vector<std::any> vector;
 		std::any any_vector;
 		int end;
-		int i = 0;
+		int i = 1;
 
-		for (auto ch = begin; i != 0 && ch < json_str.length(); ch++) {
+		for (auto ch = begin + 1; i != 0 && ch < json_str.length(); ch++) {
 			if (ch == '[')
 				i++;
 			else if (ch == ']')
@@ -107,9 +107,8 @@ private:
 				}
 			}
 			json_str[json_str.find(',')] = ' ';
+			vector.push_back(any_vector);
 		}
-
-		vector.push_back(any_vector);
 	}
 
 	std::pair<std::string, std::any> take_pair_in_object() {
