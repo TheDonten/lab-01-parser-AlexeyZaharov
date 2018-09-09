@@ -53,10 +53,16 @@ private:
 		if (end == -1)
 			end = json_str.find('}') - 1;
 		json_str[end] = ' ';
+
+		while (end < begin) {
+			json_str[end] = ' ';
+			end = json_str.find(',');
+		}
+		
 		std::string str = json_str.substr(begin, end - begin);
 
-		if (str[0] == 'f' || str[0] == 't')
-			if (str[0] == '0')
+		if (str == "false" || str == "true")
+			if (str == "false")
 				any = false;
 			else
 				any = true;
