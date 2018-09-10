@@ -2,7 +2,24 @@
 #include <map>
 #include <any>
 #include <sstream> 
-#include <vector> 
+#include <vector>
+#include <fstream>
+
+std::string read_file(std::ifstream & file_stream) {
+	std::string buf, string;
+
+	do {
+		std::getline(file_stream, buf);
+		string += buf;
+	} while (buf != "");
+	std::istringstream stream(string);
+	string.clear();
+	while (stream >> buf) {
+		string += buf;
+	}
+
+	return string;
+}
 
 std::string read(std::string string = "") {
 	std::string buf;
@@ -51,7 +68,7 @@ private:
 	void take_bool_or_object(std::any& any, int begin, int end) {
 		end = json_str.find(',');
 		if (end == -1)
-			end = json_str.find('}') - 1;
+			end = json_str.length() - 1;
 		json_str[end] = ' ';
 
 		while (end < begin) {
@@ -236,6 +253,14 @@ public:
 	}
 
 	static Json parseFile(const std::string& path_to_file) {
-		throw std::logic_error("not implemented");
+		std::ifstream file(path_to_file);
+
+		if (file.is_open()) {
+			std::string string = read_file(file);
+			file.close();
+			return Json::parse(string);
+		}
+		else
+			throw std::logic_error("not implemented");
 	}
 };
