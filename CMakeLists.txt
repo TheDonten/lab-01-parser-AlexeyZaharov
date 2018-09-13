@@ -10,8 +10,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fsanitize=address -O1 -Wall 
 # endif(CMAKE_COMPILER_IS_GNUCXX)
 
 # enum your files
-add_executable(executable
-  test.cpp
-)
-find_package (Threads)
-target_link_libraries(executable -fsanitize=address gtest ${CMAKE_THREAD_LIBS_INIT})
+add_library(json STATIC json.hpp json.h)
+add_executable(main test.cpp)
+target_link_libraries(main json)
