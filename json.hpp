@@ -148,7 +148,7 @@ private:
 				int begin = json_str.find(' ');
 				int end = 0;
 				take_bool_or_object(any_vector, begin + 1, end);
-				json_str[begin] = '.';
+				json_str[begin] = '!';
 			}
 			}
 			array.push_back(any_vector);
@@ -236,6 +236,7 @@ public:
 			while (object.json_str.find(':') != std::string::npos) {
 				std::pair<std::string, std::any> pair = object.take_pair_in_object();
 				object.map.insert(pair);
+
 			}
 
 			return object;
