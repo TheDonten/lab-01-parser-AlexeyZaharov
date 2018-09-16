@@ -12,7 +12,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fsanitize=address -O1 -Wall 
 
 # enum your files
 add_library(_json STATIC _json.hpp)
-add_library(json STATIC json.hpp)
+add_library(json STATIC nlohmann/json.hpp)
 add_executable(executable
   test.cpp
 )
