@@ -6,9 +6,9 @@ include_directories(SYSTEM
     ./
 )
 
-//# if(CMAKE_COMPILER_IS_GNUCXX)
+# if(CMAKE_COMPILER_IS_GNUCXX)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fsanitize=address -O1 -Wall -Wextra -Wno-unused-command-line-argument -Wshadow -Wnon-virtual-dtor -pedantic")
-//# endif(CMAKE_COMPILER_IS_GNUCXX)
+# endif(CMAKE_COMPILER_IS_GNUCXX)
 
 # enum your files
 add_library(_json STATIC _json.hpp)
@@ -20,4 +20,3 @@ add_executable(main
 )
 find_package (Threads)
 target_link_libraries(executable -fsanitize=address gtest ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(executable _json)
