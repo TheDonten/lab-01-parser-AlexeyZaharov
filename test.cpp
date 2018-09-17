@@ -2,7 +2,7 @@
 #include <string>
 
 #include <gtest/gtest.h>
-#include "_json.h"
+#include "_json.cpp"
 
 namespace {
 
