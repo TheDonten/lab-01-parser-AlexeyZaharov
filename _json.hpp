@@ -46,6 +46,10 @@ private:
 	std::string json_str;
 	std::vector<std::any> array;
 
+	bool is_empty() {
+		return json_str.length() == 2;
+	}
+
 	Json take_object(int begin) {
 		int i = 1;
 		int end;
@@ -55,9 +59,10 @@ private:
 				i++;
 			else if (json_str[ch] == '}') {
 				i--;
-				if (i == 0)
+				if (i == 0) {
 					end = ch;
-				break;
+					break;
+				}
 			}
 		}
 		std::string str = json_str.substr(begin, end - begin + 1);
@@ -75,7 +80,7 @@ private:
 			json_str[end] = ' ';
 			end = json_str.find(',');
 		}
-		
+
 		std::string str = json_str.substr(begin, end - begin);
 
 		if (str == "false" || str == "true")
@@ -102,14 +107,16 @@ private:
 	Json take_array(int begin) {
 		int i = 1;
 		int end;
+
 		for (auto ch = begin + 1; i != 0 && ch < json_str.length(); ch++) {
 			if (json_str[ch] == '[')
 				i++;
 			else if (json_str[ch] == ']') {
 				i--;
-				if (i == 0)
+				if (i == 0) {
 					end = ch;
-				break;
+					break;
+				}
 			}
 		}
 		std::string str = json_str.substr(begin, end - begin + 1);
@@ -135,12 +142,12 @@ private:
 				break;
 			}
 			case '{': {
-				any_vector = take_object(json_str.front() + 1);
+				any_vector = take_object(1);
 				json_str[json_str.find(',')] = ' ';
 				break;
 			}
 			case '[': {
-				any_vector = take_array(json_str.front() + 1);
+				any_vector = take_array(1);
 				json_str[json_str.find(',')] = ' ';
 				break;
 			}
@@ -231,7 +238,10 @@ public:
 
 		if (object.is_object()) {
 			object.json_str[object.json_str.find('{')] = ' ';
-			object.json_str[object.json_str.find('}')] = ' ';
+			object.json_str[object.json_str.rfind('}')] = ' ';
+
+			if (object.is_empty())
+				return object;
 
 			while (object.json_str.find(':') != std::string::npos) {
 				std::pair<std::string, std::any> pair = object.take_pair_in_object();
@@ -243,7 +253,11 @@ public:
 		}
 		else if (object.is_array()) {
 			object.json_str[object.json_str.find('[')] = ' ';
-			object.json_str[object.json_str.find(']')] = ' ';
+			object.json_str[object.json_str.rfind(']')] = ' ';
+
+			if (object.is_empty())
+				return object;
+
 			object.take_array_value();
 
 			return object;
